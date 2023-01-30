@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import TodoPage from "./pages/todo-page";
 
-test("Given a user, When user creates todos, Then item appears last on the to do list", async ({
+test("Given a user, When user delete an item, Then item is removed from the list", async ({
   page,
 }) => {
   const todoList = ["Todo-1", "Todo-2"];
@@ -31,7 +31,17 @@ test("Given a user, When user creates todos, Then item appears last on the to do
   ]);
 
   // check the total is 2 in local storage
-  // check the todo-list index 1, second item has the same title
   await todoPage.checkNumberOfTodos(page, 2);
-  await todoPage.checkTodosAtIndex(page, todoPage.todoItems[1], 1);
+
+  // Deleting workflow
+  const allItemsInTodo = page.locator(".todo-list li");
+  // First item
+  const firstItem = allItemsInTodo.nth(0);
+  // hover over to make the second item delete X button visible
+  firstItem.hover();
+  const Xbutton = page.waitForSelector(".destroy");
+  (await Xbutton).click();
+
+  await expect(page.locator(".view label")).toHaveCount(1);
+  await expect(page.locator(".view label")).toHaveText(todoPage.todoItems[1]);
 });

@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 import TodoPage from "./pages/todo-page";
 
-test("homepage has title and links to intro page", async ({ page }) => {
+test("Given a user, When user marks todo item as complete, Then it marks it green and crossed off", async ({
+  page,
+}) => {
   const todoList = ["Todo-1", "Todo-2"];
   const todoPage = new TodoPage(page, todoList);
   const webURL = "https://todomvc.com/examples/react/#/";
@@ -28,16 +30,12 @@ test("homepage has title and links to intro page", async ({ page }) => {
     todoPage.todoItems[1],
   ]);
 
-  // check the total is 2 in local storage
-  await todoPage.checkNumberOfTodos(page, 2);
-
-  // deleting workflow
-  const allItemsInTodo = page.locator(".todo-list li");
-  //second item
-  const secondItem = allItemsInTodo.nth(1);
-  // hover over to make the second item delete X button visible
-  secondItem.hover();
-  const Xbutton = page.waitForSelector(".destory");
-  (await Xbutton).click;
-  await todoPage.checkNumberOfTodos(page, 1);
+  // marking the first item as complete
+  const firstItem = page.locator(".todo-list li").nth(0);
+  await firstItem.locator(".toggle").check();
+  await expect(page.locator(".todo-list li").nth(0)).toHaveClass("completed");
+  await expect(page.locator(".todo-list li.completed label")).toHaveCSS(
+    "text-decoration",
+    /[line-through]/
+  );
 });

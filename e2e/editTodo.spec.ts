@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 import TodoPage from "./pages/todo-page";
 
-test("homepage has title and links to intro page", async ({ page }) => {
+test("Given a user, When user modifes a todo item, Then item reflects the changes", async ({
+  page,
+}) => {
   const todoList = ["Todo-1", "modified"];
   const todoPage = new TodoPage(page, todoList);
   const webURL = "https://todomvc.com/examples/react/#/";
